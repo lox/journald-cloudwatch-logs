@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -32,14 +31,10 @@ func (w *Writer) WriteBatch(records []Record) (string, error) {
 
 	events := make([]*cloudwatchlogs.InputLogEvent, 0, len(records))
 	for _, record := range records {
-		jsonDataBytes, err := json.MarshalIndent(record, "", "  ")
-		if err != nil {
-			return "", err
-		}
-		jsonData := string(jsonDataBytes)
+		message := fmt.Sprintf("[%s] [%s] %s", record.SystemdUnit, PriorityName[record.Priority], record.Message)
 
 		events = append(events, &cloudwatchlogs.InputLogEvent{
-			Message:   aws.String(jsonData),
+			Message:   aws.String(message),
 			Timestamp: aws.Int64(int64(record.TimeUsec)),
 		})
 	}

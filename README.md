@@ -1,41 +1,13 @@
 # journald-cloudwatch-logs
 
-This small utility monitors the systemd journal, managed by `journald`, and writes journal entries into
-[AWS Cloudwatch Logs](https://aws.amazon.com/cloudwatch/details/#log-monitoring).
+This a fork of [journald-cloudwatch-logs](https://github.com/saymedia/journald-cloudwatch-logs)
+which copies [systemd's journald](https://www.freedesktop.org/software/systemd/man/systemd-journald.service.html)
+messages to [AWS CloudWatch Logs](https://aws.amazon.com/cloudwatch/details/#log-monitoring)
+as plaintext lines. Unfortunately copying rich JSON log entries proved too costly in our production
+environment.
 
 This program is an alternative to the AWS-provided logs agent. The official logs agent copies data from
 on-disk text log files into Cloudwatch, while this utility reads directly from the systemd journal.
-
-The journal event data is written to Cloudwatch Logs in JSON format, making it amenable to filtering
-using the JSON filter syntax. Log records are translated to Cloudwatch JSON events using a
-structure like the following:
-
-```js
-{
-    "instanceId": "i-xxxxxxxx",
-    "pid": 12354,
-    "uid": 0,
-    "gid": 0,
-    "cmdName": "cron",
-    "exe": "/usr/sbin/cron",
-    "cmdLine": "/usr/sbin/CRON -f",
-    "systemdUnit": "cron.service",
-    "bootId": "fa58079c7a6d12345678b6ebf1234567",
-    "hostname": "ip-10-1-0-15",
-    "transport": "syslog",
-    "priority": "INFO",
-    "message": "pam_unix(cron:session): session opened for user root by (uid=0)",
-    "syslog": {
-        "facility": 10,
-        "ident": "CRON",
-        "pid": 12354
-    },
-    "kernel": {}
-}
-```
-
-The JSON-formatted log events could also be exported into an AWS ElasticSearch instance using the built-in
-sync mechanism, to obtain more elaborate filtering and query capabilities.
 
 ## Installation
 
